@@ -1,18 +1,19 @@
 import React from 'react';
-import { LayoutDashboard, Pill, Calendar, FileText, MessageSquare, User, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Calendar, MessageSquare, Pill, BarChart3, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'prescriptions', label: 'Prescriptions', icon: Pill },
-  { id: 'appointments', label: 'Appointments', icon: Calendar },
+  { id: 'patients', label: 'Patients', icon: Users },
   { id: 'reports', label: 'Reports', icon: FileText },
+  { id: 'appointments', label: 'Appointments', icon: Calendar },
+  { id: 'prescriptions', label: 'Prescriptions', icon: Pill },
   { id: 'messages', label: 'Messages', icon: MessageSquare },
-  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export default function UserSidebar({ activeSection, onSectionChange, isMobile, isOpen, onClose }) {
+export default function Sidebar({ activeSection, onSectionChange, isMobile, isOpen, onClose }) {
   const handleClick = (sectionId) => {
     onSectionChange(sectionId);
     if (isMobile) {
@@ -31,7 +32,7 @@ export default function UserSidebar({ activeSection, onSectionChange, isMobile, 
         <div className="p-4 border-b border-emerald-100 dark:border-emerald-900/30">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Menu</h2>
         </div>
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto" role="navigation" aria-label="User sections">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto" role="navigation" aria-label="Doctor sections">
           {menuItems.map((item, idx) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -76,6 +77,7 @@ export default function UserSidebar({ activeSection, onSectionChange, isMobile, 
     </motion.div>
   );
 
+  // Mobile bottom navbar
   if (isMobile) {
     return (
       <>
@@ -121,6 +123,7 @@ export default function UserSidebar({ activeSection, onSectionChange, isMobile, 
       </>
     );
   }
+
+  // Desktop sidebar
   return sidebarContent;
 }
-

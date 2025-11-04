@@ -16,6 +16,7 @@ import HealthJourneyTracker from '../components/user/rural/HealthJourneyTracker'
 import LocalHealthAlerts from '../components/user/rural/LocalHealthAlerts';
 import VoiceAssistant from '../components/user/rural/VoiceAssistant';
 import { useTranslation } from '../hooks/useTranslation';
+import { useToast } from '../contexts/ToastContext';
 import {
   mockUserPrescriptions,
   mockUserAppointments,
@@ -23,6 +24,7 @@ import {
 
 export default function RuralUserDash() {
   const { language } = useTranslation();
+  const { show } = useToast();
   const [activeSection, setActiveSection] = useState('health');
   const [showHelpForm, setShowHelpForm] = useState(false);
   const [prescriptions] = useState(mockUserPrescriptions);
@@ -42,9 +44,11 @@ export default function RuralUserDash() {
 
   const handleHelpSubmit = (data) => {
     console.log('Help request:', data);
-    alert(language === 'hi' 
-      ? 'आपकी मदद का अनुरोध भेजा गया है! एक स्वास्थ्य सेवा प्रदाता जल्द ही आपसे संपर्क करेगा।'
-      : 'Your help request has been sent! A healthcare provider will contact you soon.'
+    show(
+      language === 'hi'
+        ? 'आपकी मदद का अनुरोध भेजा गया है! एक स्वास्थ्य सेवा प्रदाता जल्द ही आपसे संपर्क करेगा।'
+        : 'Your help request has been sent! A healthcare provider will contact you soon.',
+      { type: 'success' }
     );
   };
 

@@ -12,6 +12,12 @@ export default function AppointmentsTab({ appointments, onCreateAppointment }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [showForm, setShowForm] = useState(false);
+  const [providerType, setProviderType] = useState('Doctor');
+  const [providerName, setProviderName] = useState('');
+  const [visitType, setVisitType] = useState('General Checkup');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('Clinic');
 
   const filteredAppointments = appointments?.filter((apt) => {
     const matchesSearch = apt.doctor.toLowerCase().includes(searchQuery.toLowerCase()) || apt.type.toLowerCase().includes(searchQuery.toLowerCase());
@@ -87,6 +93,98 @@ export default function AppointmentsTab({ appointments, onCreateAppointment }) {
           ))}
         </div>
       </motion.div>
+
+      {/* Booking Form */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="glass-card p-5"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)]">Provider</label>
+                <div className="mt-2 flex gap-2">
+                  {['Doctor','RMP'].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setProviderType(t)}
+                      className={`px-3 py-2 rounded-lg border text-sm ${providerType===t ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'bg-white border-emerald-100 hover:bg-slate-50 text-[var(--color-text)]'}`}
+                    >{t}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)]">{providerType} Name</label>
+                <input
+                  type="text"
+                  value={providerName}
+                  onChange={(e) => setProviderName(e.target.value)}
+                  placeholder={providerType==='Doctor' ? 'e.g., Dr. Arjun Mehta' : 'e.g., RMP Suresh Kumar'}
+                  className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)]">Visit Type</label>
+                <select
+                  value={visitType}
+                  onChange={(e) => setVisitType(e.target.value)}
+                  className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]"
+                >
+                  {['General Checkup','Follow Up','Prescription Refill','Teleconsultation'].map(v => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)]">Date</label>
+                  <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[var(--color-text)]">Time</label>
+                  <input type="time" value={time} onChange={(e)=>setTime(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text)]">Location</label>
+                <input type="text" value={location} onChange={(e)=>setLocation(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]" />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 rounded-lg border border-emerald-200 text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!providerName || !date || !time) return;
+                  onCreateAppointment({
+                    via: providerType,
+                    doctor: providerName,
+                    type: visitType,
+                    date,
+                    time,
+                    location,
+                  });
+                  setShowForm(false);
+                  setProviderName('');
+                }}
+                className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:brightness-110"
+              >
+                Confirm Booking
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Appointments List */}
       <AnimatePresence mode="wait">

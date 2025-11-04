@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../contexts/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/rmp/Header';
 import Sidebar from '../components/rmp/Sidebar';
@@ -32,6 +33,7 @@ export default function OfficialDash() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { show } = useToast();
 
   // Handle responsive design
   useEffect(() => {
@@ -190,10 +192,10 @@ export default function OfficialDash() {
   };
 
   const handleSync = () => {
-    alert('Syncing data...');
+    show('Syncing data…', { type: 'info', duration: 1500 });
     setTimeout(() => {
       setStats((prev) => ({ ...prev, lastSync: 'Just now' }));
-      alert('Data synced successfully!');
+      show('Data synced successfully!', { type: 'success' });
     }, 1000);
   };
 

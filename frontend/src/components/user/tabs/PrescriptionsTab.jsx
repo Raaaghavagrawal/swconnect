@@ -10,6 +10,7 @@ const statusConfig = {
 
 export default function PrescriptionsTab({ prescriptions, onNavigate }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
   const filteredPrescriptions = prescriptions?.filter((pres) => {
@@ -54,12 +55,25 @@ export default function PrescriptionsTab({ prescriptions, onNavigate }) {
           <input
             type="text"
             placeholder="Search medications..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setSearchQuery(searchText.trim());
+              }
+            }}
             className="w-full pl-10 pr-4 py-2.5 border border-emerald-100 dark:border-emerald-900/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] glass-card text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
+          <button
+            type="button"
+            onClick={() => setSearchQuery(searchText.trim())}
+            aria-label="Search"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
+            <Search className="w-5 h-5" />
+          </button>
         </div>
-        <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2 overflow-x-auto w-full min-w-0 pb-1">
           {['All', 'Active', 'Completed', 'Expired'].map((s) => (
             <motion.button
               key={s}

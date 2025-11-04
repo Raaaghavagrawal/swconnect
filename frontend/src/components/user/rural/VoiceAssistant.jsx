@@ -41,7 +41,7 @@ export default function VoiceAssistant({ content }) {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="fixed bottom-24 right-6 z-40"
+      className="fixed bottom-8 left-6 z-40"
     >
       <div className="flex flex-col gap-3">
         {/* Read Aloud Button */}

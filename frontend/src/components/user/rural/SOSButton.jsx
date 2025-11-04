@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Phone, X, MapPin } from 'lucide-react';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { useToast } from '../../../contexts/ToastContext';
 
 export default function SOSButton() {
   const { language } = useTranslation();
+  const { show } = useToast();
   const [isActive, setIsActive] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -14,9 +16,11 @@ export default function SOSButton() {
 
   const handleConfirm = () => {
     // Simulate emergency call
-    alert(language === 'hi' 
-      ? 'आपातकालीन कॉल शुरू की जा रही है...\nCalling: 108 Emergency Services'
-      : 'Initiating emergency call...\nCalling: 108 Emergency Services'
+    show(
+      language === 'hi'
+        ? 'आपातकालीन कॉल शुरू की जा रही है... (108)'
+        : 'Initiating emergency call... (108)',
+      { type: 'warning' }
     );
     setShowConfirm(false);
     setIsActive(true);

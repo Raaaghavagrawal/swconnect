@@ -42,8 +42,13 @@
 html, body, #root {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  font-family: 'Montserrat', 'Manrope', 'Poppins', 'Martel Sans', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Apply fonts to all elements */
+* {
+  font-family: inherit;
 }
 
 /* Glassmorphism helper */
@@ -93,5 +98,14 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #00a08a;
+}
+
+/* Hide scrollbar utility for compact nav rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 

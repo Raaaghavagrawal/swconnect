@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '../contexts/ToastContext';
 import UserHeader from '../components/user/UserHeader';
 import UserSidebar from '../components/user/UserSidebar';
 import UserDashboardTab from '../components/user/tabs/DashboardTab';
@@ -29,6 +30,7 @@ export default function UserDash() {
   const [stats, setStats] = useState(mockUserStats);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { show } = useToast();
 
   // Handle responsive design
   useEffect(() => {
@@ -90,7 +92,23 @@ export default function UserDash() {
         return (
           <AppointmentsTab
             appointments={appointments}
-            onCreateAppointment={() => alert('Appointment booking feature coming soon!')}
+            onCreateAppointment={(apt) => {
+              // Expect apt: { doctor, type, date, time, location, via }
+              setAppointments((prev) => [
+                ...prev,
+                {
+                  id: Date.now().toString(),
+                  doctor: apt.doctor,
+                  type: `${apt.via} • ${apt.type}`,
+                  date: apt.date,
+                  time: apt.time,
+                  location: apt.location || 'Clinic',
+                  status: 'Scheduled',
+                },
+              ]);
+              setActiveSection('appointments');
+              show('Appointment booked successfully!', { type: 'success' });
+            }}
           />
         );
       case 'reports':

@@ -88,7 +88,7 @@ export default function Sidebar({ activeSection, onSectionChange, isMobile, isOp
           transition={{ type: 'spring', damping: 25 }}
           className="fixed bottom-0 left-0 right-0 glass-card border-t border-emerald-100 dark:border-emerald-900/30 z-50 md:hidden shadow-2xl"
         >
-          <div className="flex justify-around items-center h-16">
+          <div className="flex justify-around items-center h-16 overflow-x-auto no-scrollbar px-2 gap-2">
             {menuItems.slice(0, 5).map((item, idx) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
@@ -100,7 +100,7 @@ export default function Sidebar({ activeSection, onSectionChange, isMobile, isOp
                   transition={{ delay: idx * 0.05 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleClick(item.id)}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors relative ${
+                  className={`shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors relative ${
                     isActive
                       ? 'text-[var(--color-primary)]'
                       : 'text-slate-600 dark:text-slate-400'
