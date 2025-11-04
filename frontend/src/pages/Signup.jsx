@@ -81,7 +81,7 @@ export default function Signup() {
               >
                 <option>Doctor</option>
                 <option>User</option>
-                <option>Official</option>
+                <option>RMP</option>
               </select>
             </div>
             {error && <div className="text-sm text-red-600">{error}</div>}

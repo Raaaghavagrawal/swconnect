@@ -10,7 +10,7 @@ export default function Landing() {
   const loginItems = [
     { label: 'Doctor Login', desc: 'For medical professionals', icon: '👨‍⚕️' },
     { label: 'User (Patient) Login', desc: 'For patients and families', icon: '🧑‍🤝‍🧑' },
-    { label: 'Government Official Login', desc: 'For health officials', icon: '🏛️' },
+    { label: 'RMP (Registered Medical Practitioner) Login', desc: 'For registered medical practitioners', icon: '🏛️' },
   ];
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Landing() {
             SwasthyaConnect — Bridging Rural Healthcare Digitally.
           </h1>
           <p className="mt-5 text-lg md:text-xl text-slate-600">
-            Connect Patients, Doctors, and Officials — Anytime, Anywhere.
+            Connect Patients, Doctors, and RMPs — Anytime, Anywhere.
           </p>
           <div className="mt-10 flex gap-3">
             <Link

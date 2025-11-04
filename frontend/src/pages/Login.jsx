@@ -39,7 +39,7 @@ export default function Login() {
       const roleDoc = await getDoc(doc(db, 'userRoles', userCred.user.uid));
       const effectiveRole = roleDoc.exists() ? (roleDoc.data().role || role) : role;
       if (effectiveRole === 'Doctor') navigate('/doctor');
-      else if (effectiveRole === 'Official') navigate('/official');
+      else if (effectiveRole === 'RMP') navigate('/official');
       else navigate('/user');
     } catch (err) {
       setError(err?.message || 'Login failed');
@@ -101,7 +101,7 @@ export default function Login() {
             <div>
               <label className="block text-sm font-medium text-gray-700">Role</label>
               <div className="mt-1 grid grid-cols-3 gap-2">
-                {['Doctor','User','Official'].map(r => (
+                {['Doctor','User','RMP'].map(r => (
                   <button
                     type="button"
                     key={r}
