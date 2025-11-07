@@ -1,19 +1,26 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   server: { 
     port: 7400
   },
-  // Ensure proper base path for deployment
   base: '/',
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   build: {
-    // Ensure assets are properly referenced
     assetsDir: 'assets',
     outDir: 'dist',
-    // Generate source maps for debugging (set to true if needed)
     sourcemap: false
-  }
+  },
+  // Prevent esbuild from resolving parent tsconfig.json files
+  esbuild: {
+    tsconfigRaw: '{}',
+  },
 });
 

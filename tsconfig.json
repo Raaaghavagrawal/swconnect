@@ -1,7 +1,12 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "types": [],
     "paths": {
       "@/*": [
         "./*"
@@ -13,5 +18,13 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "frontend",
+    "backend",
+    "dist",
+    ".expo",
+    "web-build"
   ]
 }
