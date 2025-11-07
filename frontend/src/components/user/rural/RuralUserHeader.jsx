@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogOut, Globe2, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useTranslation } from '../../../hooks/useTranslation';
+import ConfirmDialog from '../../common/ConfirmDialog';
 
 export default function RuralUserHeader({ userName = 'User' }) {
   const navigate = useNavigate();
   const { language, changeLanguage } = useLanguage();
   const { t } = useTranslation();
+  const [showLogout, setShowLogout] = useState(false);
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      navigate('/login');
-    }
+    setShowLogout(true);
   };
 
   const toggleLanguage = () => {
@@ -21,6 +21,7 @@ export default function RuralUserHeader({ userName = 'User' }) {
   };
 
   return (
+    <>
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -72,6 +73,16 @@ export default function RuralUserHeader({ userName = 'User' }) {
         </div>
       </div>
     </motion.header>
+    <ConfirmDialog
+      key="confirm"
+      open={showLogout}
+      title="Logout"
+      message="Are you sure you want to logout?"
+      confirmText="Logout"
+      onCancel={() => setShowLogout(false)}
+      onConfirm={() => { setShowLogout(false); navigate('/login'); }}
+    />
+    </>
   );
 }
 

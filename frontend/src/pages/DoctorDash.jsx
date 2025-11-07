@@ -8,7 +8,7 @@ import PatientsTab from '../components/doctor/tabs/PatientsTab';
 import ReportsTab from '../components/doctor/tabs/ReportsTab';
 import AppointmentsTab from '../components/doctor/tabs/AppointmentsTab';
 import PrescriptionsTab from '../components/doctor/tabs/PrescriptionsTab';
-import MessagesTab from '../components/doctor/tabs/MessagesTab';
+import MessagesTab from '../components/common/MessagesTab';
 import AnalyticsTab from '../components/doctor/tabs/AnalyticsTab';
 import SettingsTab from '../components/rmp/tabs/SettingsTab';
 import {
@@ -18,6 +18,8 @@ import {
   mockMessages,
   mockAnalyticsData,
 } from '../data/mockData';
+import { db, auth } from '../firebase';
+import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp, limit } from 'firebase/firestore';
 
 export default function DoctorDash() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -110,6 +112,22 @@ export default function DoctorDash() {
     });
   }, [patients, reports, appointments, prescriptions]);
 
+  // Realtime Messages
+  useEffect(() => {
+    const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'), limit(100));
+    const unsub = onSnapshot(q, (snap) => {
+      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    }, (err) => {
+      console.error('Messages listener error:', err);
+      if (err.code === 'permission-denied') {
+        // Fallback to mock data if permissions not set up yet
+        setMessages(mockMessages);
+        show('Using offline mode. Deploy Firestore rules to enable real-time messages.', { type: 'warning', duration: 5000 });
+      }
+    });
+    return () => unsub();
+  }, []);
+
   // Navigation handlers
   const handleNavigate = (section) => {
     setActiveSection(section);
@@ -129,17 +147,25 @@ export default function DoctorDash() {
     );
   };
 
-  const handleSendMessage = (messageText) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      from: profile.name,
-      type: 'doctor',
-      message: messageText,
-      timestamp: new Date().toLocaleString(),
-      isRead: true,
-      priority: 'normal',
-    };
-    setMessages((prev) => [newMessage, ...prev]);
+  const handleSendMessage = async (messageText) => {
+    try {
+      await addDoc(collection(db, 'messages'), {
+        from: profile.name,
+        fromUid: auth.currentUser?.uid || null,
+        role: 'doctor',
+        message: messageText,
+        createdAt: serverTimestamp(),
+        isRead: false,
+        priority: 'normal',
+      });
+    } catch (err) {
+      console.error('Send message error:', err);
+      if (err.code === 'permission-denied') {
+        show('Permission denied. Please check Firestore security rules.', { type: 'error' });
+      } else {
+        show('Failed to send message. Please try again.', { type: 'error' });
+      }
+    }
   };
 
   const handleSync = () => {
@@ -192,14 +218,42 @@ export default function DoctorDash() {
         return (
           <AppointmentsTab
             appointments={appointments}
-            onCreateAppointment={handleCreateAppointment}
+            onCreateAppointment={(apt) => {
+              setAppointments((prev) => [
+                ...prev,
+                {
+                  id: Date.now().toString(),
+                  patientName: apt.patientName,
+                  date: apt.date,
+                  time: apt.time,
+                  location: apt.location,
+                  status: 'Scheduled',
+                  reason: apt.reason,
+                },
+              ]);
+              setActiveSection('appointments');
+              show('Appointment booked!', { type: 'success' });
+            }}
           />
         );
       case 'prescriptions':
         return (
           <PrescriptionsTab
             prescriptions={prescriptions}
-            onCreatePrescription={handleCreatePrescription}
+            onCreatePrescription={(p) => {
+              setPrescriptions((prev) => [
+                ...prev,
+                {
+                  id: Date.now().toString(),
+                  patientName: p.patientName,
+                  date: p.date,
+                  status: 'Active',
+                  medicines: p.medicines,
+                },
+              ]);
+              setActiveSection('prescriptions');
+              show('Prescription created!', { type: 'success' });
+            }}
           />
         );
       case 'messages':
@@ -207,6 +261,7 @@ export default function DoctorDash() {
           <MessagesTab
             messages={messages}
             onSendMessage={handleSendMessage}
+            currentRole="doctor"
           />
         );
       case 'analytics':

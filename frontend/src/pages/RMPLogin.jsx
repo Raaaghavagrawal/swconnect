@@ -6,16 +6,15 @@ import { useToast } from '../contexts/ToastContext';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-export default function Login() {
+export default function RMPLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role] = useState('User');
+  const [role] = useState('RMP');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { show } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
-  const displayRole = role === 'User' ? 'Patient' : role;
   const menuRef = useRef(null);
   const btnRef = useRef(null);
 
@@ -57,17 +56,15 @@ export default function Login() {
       const roleDoc = await getDoc(doc(db, 'userRoles', userCred.user.uid));
       const effectiveRole = roleDoc.exists() ? (roleDoc.data().role || role) : role;
 
-      // Enforce patient-only login on this page
-      if (effectiveRole !== 'User') {
-        show('This portal is for patients only. Please use "Other signups" for Doctor/RMP.', { type: 'error' });
+      // Enforce RMP-only login on this page
+      if (effectiveRole !== 'RMP') {
+        show('This portal is for RMPs only. Please use the correct login page for your role.', { type: 'error' });
         await signOut(auth);
         return;
       }
 
-      show('Welcome back! You are logged in.', { type: 'success' });
-      if (effectiveRole === 'Doctor') navigate('/doctor');
-      else if (effectiveRole === 'RMP') navigate('/official');
-      else navigate('/user');
+      show('Welcome back!', { type: 'success' });
+      navigate('/official');
     } catch (err) {
       setError(err?.message || 'Login failed');
       show(err?.message || 'Login failed', { type: 'error' });
@@ -78,20 +75,19 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4" style={{ background: 'var(--color-bg)' }}>
-      {/* Home button */
-      }
+      {/* Home button */}
       <div className="absolute top-4 left-4">
         <Link to="/" className="px-4 py-2 rounded-lg glass-card text-[var(--color-text)] hover:shadow-md transition">
           Home
         </Link>
       </div>
-      {/* Selected role badge (synced) */}
+      {/* Selected role badge */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2">
         <span className="px-3 py-1 rounded-full glass-card text-xs text-[var(--color-text)]">
-          Role: {displayRole}
+          Role: RMP
         </span>
       </div>
-      {/* Other signups dropdown */}
+      {/* Other logins dropdown */}
       <div className="absolute top-4 right-4">
         <div className="relative">
           <button
@@ -99,41 +95,23 @@ export default function Login() {
             onClick={() => setMenuOpen((v) => !v)}
             className="px-4 py-2 rounded-lg glass-card text-[var(--color-text)] hover:shadow-md transition"
           >
-            Other signups
+            Other logins
           </button>
           <div
             ref={menuRef}
             className={`absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border overflow-hidden transition-all duration-200 origin-top-right z-50 ${menuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}
           >
             <button
-              onClick={() => { setMenuOpen(false); navigate('/signup', { state: { role: 'Doctor', mode: 'login' } }); }}
+              onClick={() => { setMenuOpen(false); navigate('/login'); }}
               className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700"
             >
+              Patient Login
+            </button>
+            <button
+              onClick={() => { setMenuOpen(false); navigate('/doctor-login'); }}
+              className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 border-t"
+            >
               Doctor Login
-            </button>
-            <button
-              onClick={() => { setMenuOpen(false); navigate('/signup', { state: { role: 'RMP', mode: 'login' } }); }}
-              className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 border-t"
-            >
-              RMP Login
-            </button>
-            <button
-              onClick={() => { setMenuOpen(false); navigate('/signup', { state: { role: 'Doctor' } }); }}
-              className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 border-t"
-            >
-              Doctor Signup
-            </button>
-            <button
-              onClick={() => { setMenuOpen(false); navigate('/signup', { state: { role: 'RMP' } }); }}
-              className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 border-t"
-            >
-              RMP Signup
-            </button>
-            <button
-              onClick={() => { setMenuOpen(false); navigate('/signup', { state: { role: 'User' } }); }}
-              className="w-full text-left px-4 py-3 hover:bg-emerald-50 text-slate-700 border-t"
-            >
-              Patient Signup
             </button>
           </div>
         </div>
@@ -147,13 +125,13 @@ export default function Login() {
               <div className="absolute -right-20 -bottom-16 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
               <div className="relative z-10">
                 <h1 className="text-4xl font-extrabold tracking-tight">SwasthyaConnect</h1>
-                <p className="mt-3 text-emerald-50 text-lg">Bridging Rural Healthcare Digitally</p>
+                <p className="mt-3 text-emerald-50 text-lg">RMP Portal</p>
                 <div className="mt-8 grid grid-cols-2 gap-4 text-sm">
                   {[
-                    ['✅', 'Offline-first & Sync'],
-                    ['🔐', 'Secure records'],
-                    ['🗺️', 'Geo insights'],
-                    ['🌐', 'Multilingual UI'],
+                    ['🏛️', 'Patient Visits'],
+                    ['📝', 'Reports'],
+                    ['💊', 'PharmaConnect'],
+                    ['📊', 'Analytics'],
                   ].map(([icon, label]) => (
                     <div key={label} className="glass-card bg-white/10 border-white/20 text-white">
                       <div className="p-4 flex items-center gap-3">
@@ -170,9 +148,9 @@ export default function Login() {
           {/* Form */}
           <div className="glass-card p-6 md:p-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-[var(--color-text)]">Patient Login</h2>
-              <p className="text-slate-600 mt-1">Sign in to your patient account</p>
-              <div className="mt-1 text-xs text-slate-500">For doctors and RMPs, use the "Other signups" menu at the top-right.</div>
+              <h2 className="text-2xl font-semibold text-[var(--color-text)]">RMP Login</h2>
+              <p className="text-slate-600 mt-1">Sign in to your RMP account</p>
+              <div className="mt-1 text-xs text-slate-500">For patients and doctors, use the "Other logins" menu at the top-right.</div>
             </div>
             <form onSubmit={onSubmit} className="space-y-5">
               <div>
@@ -184,7 +162,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full border border-emerald-100 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]"
-                    placeholder="you@example.com"
+                    placeholder="rmp@example.com"
                   />
                   <span className="absolute left-3 top-2.5 text-slate-400">@</span>
                 </div>
@@ -209,7 +187,6 @@ export default function Login() {
                   <button type="button" className="text-[var(--color-secondary)] hover:underline">Forgot password?</button>
                 </div>
               </div>
-              {/* Role defaults to User; other roles via dropdown */}
               {error && (
                 <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
                   {error}
@@ -226,7 +203,7 @@ export default function Login() {
                 By continuing, you agree to our Terms and Privacy Policy.
               </div>
               <div className="text-sm text-center">
-                New here? <Link to="/signup" className="text-[var(--color-secondary)] hover:underline">Create an account</Link>
+                New here? <Link to="/signup" state={{ role: 'RMP' }} className="text-[var(--color-secondary)] hover:underline">Create an RMP account</Link>
               </div>
             </form>
           </div>

@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 
 export default function PrescriptionsTab({ prescriptions, onCreatePrescription }) {
   const [filter, setFilter] = useState('All');
+  const [showForm, setShowForm] = useState(false);
+  const [patientName, setPatientName] = useState('');
+  const [date, setDate] = useState('');
+  const [medicinesText, setMedicinesText] = useState('Paracetamol 500mg twice daily');
 
   const filteredPrescriptions = prescriptions.filter((pres) => {
     if (filter === 'Active') return pres.status === 'Active';
@@ -30,13 +34,50 @@ export default function PrescriptionsTab({ prescriptions, onCreatePrescription }
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onCreatePrescription}
+          onClick={() => setShowForm((v) => !v)}
           className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors flex items-center gap-2 shadow-sm hover:shadow-md"
         >
           <Plus className="w-4 h-4" />
           New Prescription
         </motion.button>
       </div>
+
+      {/* Create Prescription Form */}
+      {showForm && (
+        <div className="glass-card p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Patient Name</label>
+              <input value={patientName} onChange={(e)=>setPatientName(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" placeholder="e.g., Priya Sharma" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Date</label>
+              <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700">Medicines (one per line)</label>
+              <textarea value={medicinesText} onChange={(e)=>setMedicinesText(e.target.value)} rows={3} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" />
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <button onClick={()=>setShowForm(false)} className="px-4 py-2 rounded-lg border border-emerald-200 text-slate-700 hover:bg-slate-50">Cancel</button>
+            <button
+              onClick={()=>{
+                if (!patientName || !date) return;
+                const medicines = medicinesText
+                  .split('\n')
+                  .map(line => line.trim())
+                  .filter(Boolean)
+                  .map(line => ({ name: line.split(/\s+/)[0], dosage: line.replace(line.split(/\s+/)[0], '').trim() || 'as directed' }));
+                onCreatePrescription({ patientName, date, medicines });
+                setShowForm(false);
+                setPatientName('');
+              }}
+              className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:brightness-110"
+            >Create</button>
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-x-auto">

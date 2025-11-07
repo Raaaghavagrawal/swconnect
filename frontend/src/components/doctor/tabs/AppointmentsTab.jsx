@@ -4,6 +4,12 @@ import { motion } from 'framer-motion';
 
 export default function AppointmentsTab({ appointments, onCreateAppointment }) {
   const [filter, setFilter] = useState('All');
+  const [showForm, setShowForm] = useState(false);
+  const [patientName, setPatientName] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('Clinic');
+  const [reason, setReason] = useState('');
 
   const filteredAppointments = appointments.filter((apt) => {
     if (filter === 'Upcoming') return apt.status === 'Scheduled';
@@ -44,7 +50,7 @@ export default function AppointmentsTab({ appointments, onCreateAppointment }) {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={onCreateAppointment}
+            onClick={() => setShowForm((v) => !v)}
             className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors flex items-center gap-2 shadow-sm hover:shadow-md"
           >
             <Plus className="w-4 h-4" />
@@ -52,6 +58,48 @@ export default function AppointmentsTab({ appointments, onCreateAppointment }) {
           </motion.button>
         </div>
       </div>
+
+      {/* Booking Form */}
+      {showForm && (
+        <div className="glass-card p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Patient Name</label>
+              <input value={patientName} onChange={(e)=>setPatientName(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" placeholder="e.g., Rajesh Kumar" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Date</label>
+                <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Time</label>
+                <input type="time" value={time} onChange={(e)=>setTime(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Location</label>
+              <input value={location} onChange={(e)=>setLocation(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700">Reason</label>
+              <input value={reason} onChange={(e)=>setReason(e.target.value)} className="mt-2 w-full border border-emerald-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]" placeholder="e.g., Follow-up consultation" />
+            </div>
+          </div>
+          <div className="mt-4 flex justify-end gap-2">
+            <button onClick={()=>setShowForm(false)} className="px-4 py-2 rounded-lg border border-emerald-200 text-slate-700 hover:bg-slate-50">Cancel</button>
+            <button
+              onClick={()=>{
+                if (!patientName || !date || !time) return;
+                onCreateAppointment({ patientName, date, time, location, reason });
+                setShowForm(false);
+                setPatientName(''); setReason('');
+              }}
+              className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:brightness-110"
+            >Confirm</button>
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-x-auto">

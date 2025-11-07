@@ -51,7 +51,7 @@ export default function OfflineSyncBanner({ onSync }) {
             : pendingData > 0
             ? 'bg-yellow-500'
             : 'bg-[#00A67E]'
-        } text-white shadow-lg sticky top-0 z-40`}
+        } text-white shadow-lg sticky top-20 z-40`}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">

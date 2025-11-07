@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogOut, Menu, Moon, Sun } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function Header({ userName = 'Doctor', onMenuClick }) {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
+  const [showLogout, setShowLogout] = useState(false);
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      navigate('/login');
-    }
+    setShowLogout(true);
   };
 
   return (
@@ -77,6 +77,14 @@ export default function Header({ userName = 'Doctor', onMenuClick }) {
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={showLogout}
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmText="Logout"
+        onCancel={() => setShowLogout(false)}
+        onConfirm={() => { setShowLogout(false); navigate('/login'); }}
+      />
     </motion.header>
   );
 }

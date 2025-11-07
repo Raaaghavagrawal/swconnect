@@ -7,9 +7,11 @@ import UserDashboardTab from '../components/user/tabs/DashboardTab';
 import PrescriptionsTab from '../components/user/tabs/PrescriptionsTab';
 import AppointmentsTab from '../components/user/tabs/AppointmentsTab';
 import ReportsTab from '../components/user/tabs/ReportsTab';
-import MessagesTab from '../components/user/tabs/MessagesTab';
+import MessagesTab from '../components/common/MessagesTab';
 import ProfileTab from '../components/user/tabs/ProfileTab';
 import SettingsTab from '../components/rmp/tabs/SettingsTab';
+import { db, auth } from '../firebase';
+import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp, limit } from 'firebase/firestore';
 import {
   mockUserPrescriptions,
   mockUserAppointments,
@@ -51,21 +53,46 @@ export default function UserDash() {
     });
   }, [prescriptions, appointments, messages]);
 
+  // Realtime Messages from Firestore
+  useEffect(() => {
+    const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'), limit(100));
+    const unsub = onSnapshot(q, (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setMessages(list);
+    }, (err) => {
+      console.error('Messages listener error:', err);
+      if (err.code === 'permission-denied') {
+        // Fallback to mock data if permissions not set up yet
+        setMessages(mockUserMessages);
+        show('Using offline mode. Deploy Firestore rules to enable real-time messages.', { type: 'warning', duration: 5000 });
+      }
+    });
+    return () => unsub();
+  }, []);
+
   const handleNavigate = (sectionId) => {
     setActiveSection(sectionId);
     if (isMobile) setSidebarOpen(false);
   };
 
-  const handleSendMessage = (messageText) => {
-    const newMessage = {
-      id: Date.now().toString(),
-      from: profile.name,
-      type: 'patient',
-      message: messageText,
-      timestamp: new Date().toLocaleString(),
-      isRead: true,
-    };
-    setMessages((prev) => [newMessage, ...prev]);
+  const handleSendMessage = async (messageText) => {
+    try {
+      await addDoc(collection(db, 'messages'), {
+        from: profile.name,
+        fromUid: auth.currentUser?.uid || null,
+        role: 'patient',
+        message: messageText,
+        createdAt: serverTimestamp(),
+        isRead: false,
+      });
+    } catch (err) {
+      console.error('Send message error:', err);
+      if (err.code === 'permission-denied') {
+        show('Permission denied. Please check Firestore security rules.', { type: 'error' });
+      } else {
+        show('Failed to send message. Please try again.', { type: 'error' });
+      }
+    }
   };
 
   const handleUpdateProfile = (updatedProfile) => {
@@ -114,7 +141,7 @@ export default function UserDash() {
       case 'reports':
         return <ReportsTab reports={reports} />;
       case 'messages':
-        return <MessagesTab messages={messages} onSendMessage={handleSendMessage} />;
+        return <MessagesTab messages={messages} onSendMessage={handleSendMessage} currentRole="patient" />;
       case 'profile':
         return <ProfileTab profile={profile} />;
       case 'settings':

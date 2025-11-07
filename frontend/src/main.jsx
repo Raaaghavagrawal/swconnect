@@ -6,7 +6,9 @@ import { ToastProvider } from './contexts/ToastContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import './styles.css';
 import Landing from './pages/Landing';
-import Login from './pages/Login';
+import PatientLoginRedirect from './pages/PatientLoginRedirect';
+import DoctorLoginRedirect from './pages/DoctorLoginRedirect';
+import RMPLoginRedirect from './pages/RMPLoginRedirect';
 import Signup from './pages/Signup';
 import DoctorDash from './pages/DoctorDash';
 import UserDash from './pages/UserDash';
@@ -15,7 +17,9 @@ import OfficialDash from './pages/OfficialDash';
 
 const router = createBrowserRouter([
   { path: '/', element: <Landing /> },
-  { path: '/login', element: <Login /> },
+  { path: '/login', element: <PatientLoginRedirect /> },
+  { path: '/doctor-login', element: <DoctorLoginRedirect /> },
+  { path: '/rmp-login', element: <RMPLoginRedirect /> },
   { path: '/signup', element: <Signup /> },
   { path: '/doctor', element: <DoctorDash /> },
   { path: '/user', element: <RuralUserDash /> },

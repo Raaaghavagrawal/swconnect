@@ -107,10 +107,9 @@ export default function RuralUserDash() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#E8F5E9] to-[#F1F8E9]">
-      {/* Offline Sync Banner */}
-      <OfflineSyncBanner onSync={handleSync} />
-      
       <RuralUserHeader />
+      {/* Offline Sync Banner (placed below header to avoid overlap) */}
+      <OfflineSyncBanner onSync={handleSync} />
       
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Main Menu Grid */}
