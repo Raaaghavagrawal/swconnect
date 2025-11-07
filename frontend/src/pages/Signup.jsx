@@ -270,7 +270,7 @@ export default function Signup() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-emerald-100 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]"
+                    className="w-full border border-emerald-100 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-black placeholder:text-slate-400"
                     placeholder="you@example.com"
                   />
                   <span className="absolute left-3 top-2.5 text-slate-400">@</span>
@@ -284,7 +284,7 @@ export default function Signup() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-emerald-100 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-[var(--color-text)]"
+                    className="w-full border border-emerald-100 rounded-lg pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-white text-black placeholder:text-slate-400"
                     placeholder="••••••••"
                   />
                   <span className="absolute left-3 top-2.5 text-slate-400">🔒</span>
